@@ -12,7 +12,9 @@ const defaults={brand:'مُذكرتي - Mzkrty',tagline:'منصتك للخدما
 const ins=db.prepare('INSERT OR IGNORE INTO content(key,value) VALUES(?,?)');Object.entries(defaults).forEach(([k,v])=>ins.run(k,v));
 if(!db.prepare('SELECT COUNT(*) c FROM services').get().c){let s=db.prepare('INSERT INTO services(title,description,icon,sort_order) VALUES(?,?,?,?)');[['تنسيق وتحرير الملاحظات','تنسيق صفحات مادة تعكس هوية المحتوى','📑',1],['المراجعة والتدقيق اللغوي','مراجعة نصوص بدقة لغوية ونحوية عالية','🔍',2],['إعداد العروض التقديمية','تصميم عروض متكاملة واحترافية','📊',3]].forEach(x=>s.run(...x));}
 if(!db.prepare('SELECT COUNT(*) c FROM prices').get().c){let p=db.prepare('INSERT INTO prices(title,description,price,features,sort_order,featured) VALUES(?,?,?,?,?,?)');[['الحزمة الأساسية','الميزات الأساسية لتبدأ مباشرة','50 ج.م','تنسيق المحتوى|التعديل حتى مرتين|تسليم سريع',1,0],['الحزمة المتقدمة','ترقية بصرية لمشروعك','90 ج.م','تنسيق مع تحسين الصور|تنسيق الملاحظات والجداول|تعديلات غير محدودة',2,1]].forEach(x=>p.run(...x));}
+app.set('trust proxy', 1);
 app.use(express.json({limit:'12mb'}));app.use(express.urlencoded({extended:true}));app.use(session({secret:SECRET,resave:false,saveUninitialized:false,cookie:{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production'}}));
+app.use(express.static(path.join(__dirname, 'public')));
 const auth=(req,res,next)=>req.session.admin?next():res.status(401).json({error:'بيانات الدخول غير صحيحة'});
 const contentData=()=>Object.fromEntries(db.prepare('SELECT key,value FROM content').all().map(r=>[r.key,r.value]));
 app.get('/api/content',(req,res)=>res.json({content:contentData(),services:db.prepare('SELECT * FROM services ORDER BY sort_order, id').all(),portfolio:db.prepare('SELECT * FROM portfolio ORDER BY sort_order, id').all(),prices:db.prepare('SELECT * FROM prices ORDER BY sort_order, id').all()}));
@@ -32,4 +34,5 @@ app.delete('/api/prices/:id',auth,(req,res)=>{db.prepare('DELETE FROM prices WHE
 app.post('/api/requests',(req,res)=>{let x=req.body;if(!x.name||!x.phone)return res.status(400).json({error:'الاسم ورقم الهاتف مطلوبان'});let i=db.prepare('INSERT INTO requests(name,phone,email,service,package_name,pages,deadline,notes) VALUES(?,?,?,?,?,?,?,?)').run(x.name,x.phone,x.email||'',x.service||'',x.package_name||'',x.pages||'',x.deadline||'',x.notes||'');res.json({ok:true,id:i.lastInsertRowid});});
 app.get('/api/requests',auth,(req,res)=>res.json(db.prepare('SELECT * FROM requests ORDER BY id DESC').all()));
 app.get('/api/admin/stats',auth,(req,res)=>{const total=db.prepare('SELECT COUNT(*) c FROM requests').get().c,newCount=db.prepare('SELECT COUNT(*) c FROM requests WHERE status=\'جديد\'').get().c,inProgress=db.prepare('SELECT COUNT(*) c FROM requests WHERE status=\'قيد التنفيذ\'').get().c,completed=db.prepare('SELECT COUNT(*) c FROM requests WHERE status=\'مكتمل\'').get().c;res.json({total,newCount,inProgress,completed});});
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.listen(PORT,()=>console.log(`MZKRATY running on ${PORT}`));
