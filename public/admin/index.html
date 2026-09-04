@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة تحكم مذكرتي</title><link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<div id="loginView" class="login-view">
+  <div class="login-card"><div class="brand-mark">مذكرتي</div><p>لوحة الإدارة الاحترافية</p>
+    <form id="loginForm"><label>اسم المستخدم<input name="username" autocomplete="username" required></label><label>كلمة المرور<input name="password" type="password" autocomplete="current-password" required></label><button class="btn primary">دخول لوحة التحكم</button><div id="loginMsg"></div></form>
+  </div>
+</div>
+<div id="appView" class="app hidden">
+  <aside class="sidebar"><div class="side-brand"><span>مذكرتي</span><small>Admin Studio</small></div>
+    <nav id="nav"><button class="nav-item active" data-page="dashboard">▦ <span>الرئيسية</span></button><button class="nav-item" data-page="requests">▤ <span>الطلبات</span><b id="newBadge">0</b></button><button class="nav-item" data-page="portfolio">▧ <span>معرض الأعمال</span></button><button class="nav-item" data-page="prices">◇ <span>الأسعار والباقات</span></button><button class="nav-item" data-page="services">✦ <span>الخدمات</span></button><button class="nav-item" data-page="content">✎ <span>محتوى الموقع</span></button></nav>
+    <div class="side-bottom"><a href="/" target="_blank">↗ معاينة الموقع</a><button id="logoutBtn">⇥ تسجيل الخروج</button></div>
+  </aside>
+  <main class="main"><header class="topbar"><button id="menuBtn" class="icon-btn">☰</button><div><h1 id="pageTitle">الرئيسية</h1><p id="pageSub">نظرة سريعة على نشاط موقعك</p></div><div class="top-actions"><span id="clock"></span><button id="refreshBtn" class="icon-btn" title="تحديث">↻</button></div></header>
+    <div id="toast" class="toast"></div><section id="page"></section>
+  </main>
+</div>
+<div id="modal" class="modal hidden"><div class="modal-backdrop"></div><div class="modal-card"><button class="modal-close" id="modalClose">×</button><div id="modalBody"></div></div></div>
+<script src="/admin/admin.js"></script>
+</body></html>
